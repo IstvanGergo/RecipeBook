@@ -1,0 +1,50 @@
+﻿@model IEnumerable<RecipeBook.Models.Recipe>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.recipe_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prep_time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(Model => Model.tags)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.recipe_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.prep_time)
+                </td>
+                <ul>
+                @foreach (var tag in item.tags)
+                {
+                 <li>@tag.tag_name</li>   
+                }
+                </ul>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.recipe_id">Szerkesztés</a> |
+                    <a asp-action="Details" asp-route-id="@item.recipe_id">Részletek</a> |
+                    <a asp-action="Delete" asp-route-id="@item.recipe_id">Törlés</a>
+                </td>
+            </tr>
+}
+    </tbody>
+</table>
