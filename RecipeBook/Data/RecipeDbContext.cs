@@ -82,7 +82,7 @@ public partial class RecipeDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("measurement_fk");
 
-            entity.HasOne(d => d.recipe).WithMany(p => p.Quantities)
+            entity.HasOne(d => d.recipe).WithMany(p => p.quantities)
                 .HasForeignKey(d => d.recipe_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("recipe_fk");
@@ -131,7 +131,7 @@ public partial class RecipeDbContext : DbContext
                 .UseIdentityAlwaysColumn()
                 .HasIdentityOptions(null, 10L, 0L, null, null, null);
 
-            entity.HasOne(d => d.recipe).WithMany(p => p.Recipe_steps)
+            entity.HasOne(d => d.recipe).WithMany(p => p.recipe_steps)
                 .HasForeignKey(d => d.recipe_id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("recipe_step");

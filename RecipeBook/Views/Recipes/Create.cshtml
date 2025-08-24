@@ -1,4 +1,4 @@
-﻿@model RecipeBook.Models.Recipe
+﻿@model RecipeBook.ViewModels.RecipeViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,15 +13,31 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="recipe_name" class="control-label"></label>
-                <input asp-for="recipe_name" class="form-control" />
-                <span asp-validation-for="recipe_name" class="text-danger"></span>
+                <label asp-for="name" class="control-label">Recept Neve</label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="prep_time" class="control-label"></label>
+				<label asp-for="prep_time" class="control-label">Elkészítési idő</label>
                 <input asp-for="prep_time" class="form-control" />
                 <span asp-validation-for="prep_time" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="description" class="control-label">Rövid leírás</label>
+                <input asp-for="description" class="form-control" />
+                <span asp-validation-for="description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="SelectedTags">Tagek</label>
+                <select asp-for="tags" asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.tags.Select( t => t.tag_id ) ))" class="form-control" multiple>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="SelectedTags">Tagek</label>
+                <select asp-for="tags" asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.tags.Select( t => t.tag_id ) ))" class="form-control" multiple>
+                </select>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

@@ -1,4 +1,4 @@
-﻿@model RecipeBook.Models.Recipe
+﻿@model RecipeBook.ViewModels.RecipeViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,10 +11,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.recipe_name)
+            @Html.DisplayNameFor(model => model.name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.recipe_name)
+            @Html.DisplayFor(model => model.name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.prep_time)
@@ -23,7 +23,7 @@
             @Html.DisplayFor(model => model.prep_time)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model =>model.tags)
+            @Html.DisplayNameFor(model => model.tags)
         </dt>
         <dd class= "col-sm-10">
             @Html.DisplayFor(model => model.tags)
@@ -32,6 +32,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.recipe_id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

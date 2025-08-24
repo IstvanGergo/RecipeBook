@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RecipeBook.Data;
 using RecipeBook.Models;
+using RecipeBook.ViewModels;
 
 namespace RecipeBook.Controllers
 {
@@ -22,7 +23,19 @@ namespace RecipeBook.Controllers
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Recipes.ToListAsync());
+            List<RecipeViewModel> recipeViewModels = [];
+            Task<List<Recipe>> recipeList =  _context.Recipes.ToListAsync();
+            await recipeList;
+            foreach ( var recipe in recipeList.Result )
+            {
+                RecipeViewModel model = new( recipe );
+                foreach(var tag in recipe.tags )
+                {
+                    model.tags.Add( tag );
+                }
+                recipeViewModels.Add( model );
+            }
+            return View( recipeViewModels );
         }
 
         // GET: Recipes/Details/5
@@ -39,8 +52,9 @@ namespace RecipeBook.Controllers
             {
                 return NotFound();
             }
+            RecipeViewModel model = new( recipe );
 
-            return View(recipe);
+            return View( model );
         }
 
         // GET: Recipes/Create
@@ -73,12 +87,16 @@ namespace RecipeBook.Controllers
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _context.Recipes
+                .Include(r => r.tags)
+                .FirstOrDefaultAsync(r => r.recipe_id == id);
+            ViewBag.AllTags = await _context.Tags.ToListAsync();
             if (recipe == null)
             {
                 return NotFound();
             }
-            return View(recipe);
+            RecipeViewModel recipeVM = new( recipe);
+            return View( recipeVM );
         }
 
         // POST: Recipes/Edit/5
@@ -86,13 +104,30 @@ namespace RecipeBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("recipe_id,recipe_name,prep_time,recipe_category_id")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, RecipeViewModel model)
         {
-            if (id != recipe.recipe_id)
-            {
-                return NotFound();
-            }
+            var recipe = await _context.Recipes
+                .Include(r => r.tags)
+                .Include(r => r.quantities)
+                .Include(r => r.recipe_steps)
+                .FirstOrDefaultAsync(r => r.recipe_id == model.id);
 
+            if ( recipe == null )
+                return NotFound();
+
+            recipe.recipe_name = model.name;
+            recipe.prep_time = model.prep_time;
+            recipe.recipe_description = model.description;
+            recipe.tags.Clear();
+
+            foreach ( var tagId in model.selectedTagIds )
+            {
+                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.tag_id == tagId);
+                if ( tag != null )
+                {
+                    recipe.tags.Add( tag );
+                }
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -116,7 +151,7 @@ namespace RecipeBook.Controllers
             return View(recipe);
         }
 
-        // GET: Recipes/Delete/5
+        // GET: Recipes/Delete/5    
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
