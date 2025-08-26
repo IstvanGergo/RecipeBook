@@ -36,10 +36,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.prep_time)
                 </td>
-                @foreach (var tag in item.tags)
-                {
-                    <td>@tag.tag_name </td>
-                }
+                    @string.Join( ", ", item.tags.Select( t => t.tag_name ) )
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.id">Szerkesztés</a> |
                     <a asp-action="Details" asp-route-id="@item.id">Részletek</a> |

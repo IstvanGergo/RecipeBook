@@ -24,15 +24,15 @@ namespace RecipeBook.Controllers
         public async Task<IActionResult> Index()
         {
             List<RecipeViewModel> recipeViewModels = [];
-            Task<List<Recipe>> recipeList =  _context.Recipes.ToListAsync();
+            var recipeList =  _context.Recipes
+                .Include(r => r.tags)
+                .Include(r => r.quantities)
+                .Include(r => r.recipe_steps)
+                .ToListAsync();
             await recipeList;
             foreach ( var recipe in recipeList.Result )
             {
                 RecipeViewModel model = new( recipe );
-                foreach(var tag in recipe.tags )
-                {
-                    model.tags.Add( tag );
-                }
                 recipeViewModels.Add( model );
             }
             return View( recipeViewModels );
@@ -47,6 +47,9 @@ namespace RecipeBook.Controllers
             }
 
             var recipe = await _context.Recipes
+                .Include(r => r.tags)
+                .Include(r => r.quantities)
+                .Include(r => r.recipe_steps)
                 .FirstOrDefaultAsync(m => m.recipe_id == id);
             if (recipe == null)
             {

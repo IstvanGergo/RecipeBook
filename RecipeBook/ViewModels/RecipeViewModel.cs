@@ -16,8 +16,7 @@ namespace RecipeBook.ViewModels
             recipe_picture = recipe.recipe_picture;
             foreach(Quantity q in recipe.quantities )
             {
-                ingredients.Add( q.ingredient );
-                measurements.Add( q.measurement );
+                quantities.Add( q );
             }
             foreach( Recipe_step step in recipe.recipe_steps )
             {
@@ -29,22 +28,21 @@ namespace RecipeBook.ViewModels
             }
         }
         public int id { get; set; }
+        [Display( Name = "Recept neve" )]
         public string name { get; set; }
+        [Display( Name = "Elkészítési idő" )]
         public short prep_time { get; set; }
+        [Display( Name = "Rövid leírás" )]
         public string? description { get; set; }
 
         public byte[]? recipe_picture { get; set; }
         [Display( Name = "Hozzávalók" )]
-        public List<Ingredient> ingredients { get; set; } = [];
-        [Display( Name = "Mértékegységek" )]
-        public List<int> selectedIngredients { get; set; } = [];
-        public List<Measurement> measurements { get; set; } = [];
+        public List<Quantity> quantities { get; set; } = [];
         [Display( Name = "Lépések" )]
-        public List<int> selectedMeasurements { get; set; } = [];
-
         public List<Recipe_step> recipe_steps { get; set; } = [];
         [Display( Name = "Tagek" )]
         public List<int> selectedTagIds { get; set; } = [];
+        [Display( Name = "Tagek" )]
         public List<Tag> tags { get; set; } = [];
     }
 }
