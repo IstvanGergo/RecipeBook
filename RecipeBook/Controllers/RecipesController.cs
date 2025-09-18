@@ -1,25 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OpenAI;
+using OpenAI.Assistants;
+using OpenAI.Chat;
+using OpenAI.Files;
 using RecipeBook.Data;
 using RecipeBook.Models;
 using RecipeBook.ViewModels;
+using static RecipeBook.Controllers.ChatCompletions;
 
 namespace RecipeBook.Controllers
 {
     public class RecipesController : Controller
     {
         private readonly RecipeDbContext _context;
-
-        public RecipesController(RecipeDbContext context)
+        private readonly ChatClient _chatClient;
+        public RecipesController(RecipeDbContext context, ChatClient chatClient )
         {
             _context = context;
+            _chatClient = chatClient;
         }
-
+         
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
@@ -191,5 +198,28 @@ namespace RecipeBook.Controllers
         {
             return _context.Recipes.Any(e => e.recipe_id == id);
         }
+        [HttpPost, ActionName( "Extract" )]
+        public async Task<IActionResult> ExtractRecipe( [FromForm] IFormFile image )
+        {
+            if ( image == null || image.Length == 0 )
+            {
+                return BadRequest( "Invalid image" );
+            }
+            using var stream = image.OpenReadStream();
+            byte[] imageBytes;
+            using (var memoryStream = new MemoryStream() )
+            {
+                await memoryStream.CopyToAsync( memoryStream );
+                imageBytes = memoryStream.ToArray();
+            }
+            BinaryData binaryData = new( imageBytes);
+            List<ChatMessage> messages = [
+                new UserChatMessage(ChatMessageContentPart.CreateImagePart(binaryData,image.ContentType.ToString(),ChatImageDetailLevel.Auto))
+                ];
+            var response = await _chatClient.CompleteChatAsync(messages, recipeReturn);
+            var result = response.Value.Content[0].Text;
+            return Ok(result);
+        }
     }
+
 }

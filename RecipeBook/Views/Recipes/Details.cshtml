@@ -29,6 +29,12 @@
             @string.Join( ", ", Model.tags.Select( t => t.tag_name ) )
         </dd>
 
+        @foreach ( var step in Model.recipe_steps )
+        {
+            <dt class="col-sm-2">@step.step_number</dt>
+            <dd class="col-sm-10">@step.step_description</dd>
+        }
+
     </dl>
 </div>
 <div>

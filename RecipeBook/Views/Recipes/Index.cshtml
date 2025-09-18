@@ -36,7 +36,12 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.prep_time)
                 </td>
+                <td>
                     @string.Join( ", ", item.tags.Select( t => t.tag_name ) )
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.description)
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.id">Szerkesztés</a> |
                     <a asp-action="Details" asp-route-id="@item.id">Részletek</a> |
