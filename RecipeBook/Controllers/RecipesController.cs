@@ -68,9 +68,10 @@ namespace RecipeBook.Controllers
         }
 
         // GET: Recipes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            ViewBag.AllTags = await _context.Tags.ToListAsync();
+            return View( new RecipeViewModel());
         }
 
         // POST: Recipes/Create
@@ -78,15 +79,16 @@ namespace RecipeBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("recipe_id,recipe_name,prep_time,recipe_category_id")] Recipe recipe)
+        public async Task<IActionResult> Create(RecipeViewModel recipe)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(recipe);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View( recipe );
             }
-            return View(recipe);
+            Recipe newRecipe = recipe.ToEntity();
+            _context.Add( newRecipe );
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Recipes/Edit/5
@@ -105,7 +107,7 @@ namespace RecipeBook.Controllers
             {
                 return NotFound();
             }
-            RecipeViewModel recipeVM = new( recipe);
+            RecipeViewModel recipeVM = new( recipe );
             return View( recipeVM );
         }
 
@@ -120,6 +122,7 @@ namespace RecipeBook.Controllers
                 .Include(r => r.tags)
                 .Include(r => r.quantities)
                 .Include(r => r.recipe_steps)
+                .Include(r => r.recipe_description)
                 .FirstOrDefaultAsync(r => r.recipe_id == model.id);
 
             if ( recipe == null )
@@ -127,7 +130,10 @@ namespace RecipeBook.Controllers
 
             recipe.recipe_name = model.name;
             recipe.prep_time = model.prep_time;
+            if(model.description != null )
+            {
             recipe.recipe_description = model.description;
+            }
             recipe.tags.Clear();
 
             foreach ( var tagId in model.selectedTagIds )

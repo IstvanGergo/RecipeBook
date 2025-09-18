@@ -27,6 +27,25 @@ namespace RecipeBook.ViewModels
                 tags.Add( tag );
             }
         }
+        public Recipe ToEntity(  )
+        {
+            var recipe = new Recipe
+            {
+                recipe_id = this.id,
+                recipe_name = this.name,
+                prep_time = this.prep_time,
+                recipe_description = this.description,
+                recipe_picture = this.recipe_picture,
+
+                quantities = this.quantities.ToList(),
+                recipe_steps = this.recipe_steps.ToList(),
+                tags = this.selectedTagIds
+                    .Select( tagId => new Tag { tag_id = tagId } )
+                    .ToList()
+            };
+
+            return recipe;
+        }
         public int id { get; set; }
         [Display( Name = "Recept neve" )]
         public string name { get; set; }
