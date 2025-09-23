@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.prep_time)
             </th>
             <th>
-                @Html.DisplayNameFor(Model => Model.tags)
+                @Html.DisplayNameFor( Model => Model.selectedTagNames )
             </th>
             <th>
                 @Html.DisplayNameFor(Model => Model.description)
@@ -37,7 +37,7 @@
                     @Html.DisplayFor(modelItem => item.prep_time)
                 </td>
                 <td>
-                    @string.Join( ", ", item.tags.Select( t => t.tag_name ) )
+                    @string.Join( ", ", item.selectedTagNames )
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.description)

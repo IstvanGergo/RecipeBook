@@ -23,10 +23,10 @@
             @Html.DisplayFor(model => model.prep_time)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.tags)
+            @Html.DisplayNameFor(model => model.selectedTagNames)
         </dt>
         <dd class= "col-sm-10">
-            @string.Join( ", ", Model.tags.Select( t => t.tag_name ) )
+            @string.Join( ", ", Model.selectedTagNames )
         </dd>
 
         @foreach ( var step in Model.recipe_steps )

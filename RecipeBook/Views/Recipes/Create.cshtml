@@ -29,13 +29,23 @@
             </div>
             <div class="form-group">
                 <label for="SelectedTags">Tagek</label>
-                <select asp-for="tags" asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.tags.Select( t => t.tag_id ) ))" class="form-control" multiple>
+                <select asp-for="selectedTagIds" 
+                    asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.selectedTagIds ))"
+                    class="form-control" multiple>
                 </select>
             </div>
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+        </form>
+
+        <form asp-action="Extract" method="post" enctype="multipart/form-data" class="mt-3">
+            <div class="form-group">
+                <label for="image">Upload Image for AI Extraction</label>
+                <input type="file" name="image" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-secondary">Extract Recipe from Image</button>
         </form>
     </div>
 </div>

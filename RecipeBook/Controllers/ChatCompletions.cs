@@ -14,20 +14,12 @@ namespace RecipeBook.Controllers
                     {
                         "type":"object",
                         "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "time": {
-                                "type": "number"
-                            },
-                            "short_description": {
-                                "type": "string"
-                            },
+                            "name": { "type": "string" },
+                            "time": { "type": "number" },
+                            "short_description": { "type": "string" },
                             "tags":{
                                 "type": "array",
-                                "items":{
-                                    "type": "string"
-                                }
+                                "items":{ "type": "string" }
                             },
                             "steps": {
                                 "type": "array",
@@ -36,7 +28,9 @@ namespace RecipeBook.Controllers
                                     "properties": {
                                         "number": { "type": "number" },
                                         "description": { "type": "string" }
-                                    }
+                                    },
+                                    "required": ["number", "description"],
+                                    "additionalProperties": false
                                 }
                             },
                             "quantities":{
@@ -47,13 +41,17 @@ namespace RecipeBook.Controllers
                                         "ingredient": { "type": "string" },
                                         "quantity": { "type": "number" },
                                         "measurement": { "type": "string"}
-                                    }
+                                    },
+                                "required": ["ingredient", "quantity", "measurement"],
+                                "additionalProperties": false
                                 }
                             }
-                        }
+                        },
+                        "required": ["name", "time", "short_description", "tags", "steps", "quantities"],
+                        "additionalProperties": false
                     }
                     """u8.ToArray()),
-                "You are an AI assistant that parses a picture of a recipe into JSON. If there are any all uppercase strings, rewrite them to only start with uppercase.",
+                "Egy AI asszisztens vagy, aki receptek képeit konvertálja JSON formátumba. Eközben írj át minden betűt kisbetűre.",
                 true)
         };
     }

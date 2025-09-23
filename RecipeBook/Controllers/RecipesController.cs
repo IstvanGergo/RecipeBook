@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,7 +34,10 @@ namespace RecipeBook.Controllers
             List<RecipeViewModel> recipeViewModels = [];
             var recipeList =  _context.Recipes
                 .Include(r => r.tags)
-                .Include(r => r.quantities)
+                .Include( r => r.quantities)
+                    .ThenInclude( q => q.ingredient )
+                .Include( r=> r.quantities )
+                    .ThenInclude( q=>q.measurement )
                 .Include(r => r.recipe_steps)
                 .ToListAsync();
             await recipeList;
@@ -55,7 +59,10 @@ namespace RecipeBook.Controllers
 
             var recipe = await _context.Recipes
                 .Include(r => r.tags)
-                .Include(r => r.quantities)
+                                .Include( r => r.quantities)
+                    .ThenInclude( q => q.ingredient )
+                .Include( r=> r.quantities )
+                    .ThenInclude( q=>q.measurement )
                 .Include(r => r.recipe_steps)
                 .FirstOrDefaultAsync(m => m.recipe_id == id);
             if (recipe == null)
@@ -71,7 +78,7 @@ namespace RecipeBook.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.AllTags = await _context.Tags.ToListAsync();
-            return View( new RecipeViewModel());
+            return View( new RecipeViewModel() );
         }
 
         // POST: Recipes/Create
@@ -79,13 +86,13 @@ namespace RecipeBook.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RecipeViewModel recipe)
+        public async Task<IActionResult> Create( RecipeViewModel recipe )
         {
             if (!ModelState.IsValid)
             {
                 return View( recipe );
             }
-            Recipe newRecipe = recipe.ToEntity();
+            Recipe newRecipe = await RecipeMapper.ToEntityAsync(recipe,_context);
             _context.Add( newRecipe );
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -122,7 +129,6 @@ namespace RecipeBook.Controllers
                 .Include(r => r.tags)
                 .Include(r => r.quantities)
                 .Include(r => r.recipe_steps)
-                .Include(r => r.recipe_description)
                 .FirstOrDefaultAsync(r => r.recipe_id == model.id);
 
             if ( recipe == null )
@@ -136,9 +142,9 @@ namespace RecipeBook.Controllers
             }
             recipe.tags.Clear();
 
-            foreach ( var tagId in model.selectedTagIds )
+            foreach ( var selectedTag in model.selectedTagIds )
             {
-                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.tag_id == tagId);
+                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.tag_id == selectedTag);
                 if ( tag != null )
                 {
                     recipe.tags.Add( tag );
@@ -211,20 +217,25 @@ namespace RecipeBook.Controllers
             {
                 return BadRequest( "Invalid image" );
             }
-            using var stream = image.OpenReadStream();
+
             byte[] imageBytes;
-            using (var memoryStream = new MemoryStream() )
+            using ( var memoryStream = new MemoryStream() )
             {
-                await memoryStream.CopyToAsync( memoryStream );
+                await image.CopyToAsync( memoryStream );
                 imageBytes = memoryStream.ToArray();
             }
-            BinaryData binaryData = new( imageBytes);
+            BinaryData binaryData = new( imageBytes );
             List<ChatMessage> messages = [
                 new UserChatMessage(ChatMessageContentPart.CreateImagePart(binaryData,image.ContentType.ToString(),ChatImageDetailLevel.Auto))
                 ];
             var response = await _chatClient.CompleteChatAsync(messages, recipeReturn);
             var result = response.Value.Content[0].Text;
-            return Ok(result);
+            var extracted = JsonSerializer.Deserialize<RecipeDto>( result );
+            var newRecipeViewModel = await RecipeMapper.FromImportDto( extracted, _context );
+            var recipe = await RecipeMapper.ToEntityAsync( newRecipeViewModel, _context );
+            _context.Recipes.Add( recipe );
+            _context.SaveChanges();
+            return RedirectToAction( nameof( Index ) );
         }
     }
 

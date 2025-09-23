@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label for="SelectedTagIds">Tagek</label>
                 <select asp-for="selectedTagIds"
-                        asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.tags.Select( t => t.tag_id ) ))"
+                        asp-items="@(new MultiSelectList( ViewBag.AllTags, "tag_id", "tag_name", Model.selectedTagIds ))"
                         class="form-control" multiple>
                 </select>
             </div>

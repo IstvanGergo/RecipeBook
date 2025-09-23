@@ -7,7 +7,7 @@ namespace RecipeBook.ViewModels
     public class RecipeViewModel
     {
         public RecipeViewModel() { }
-        public RecipeViewModel(Recipe recipe)
+        public RecipeViewModel( Recipe recipe )
         {
             id = recipe.recipe_id;
             name = recipe.recipe_name;
@@ -16,7 +16,8 @@ namespace RecipeBook.ViewModels
             recipe_picture = recipe.recipe_picture;
             foreach(Quantity q in recipe.quantities )
             {
-                quantities.Add( q );
+                QuantityViewModel quantityViewModel = new QuantityViewModel(q);
+                quantities.Add( quantityViewModel );
             }
             foreach( Recipe_step step in recipe.recipe_steps )
             {
@@ -24,27 +25,9 @@ namespace RecipeBook.ViewModels
             }
             foreach( Tag tag in recipe.tags )
             {
-                tags.Add( tag );
+                selectedTagIds.Add( tag.tag_id );
+                selectedTagNames.Add( tag.tag_name );
             }
-        }
-        public Recipe ToEntity(  )
-        {
-            var recipe = new Recipe
-            {
-                recipe_id = this.id,
-                recipe_name = this.name,
-                prep_time = this.prep_time,
-                recipe_description = this.description,
-                recipe_picture = this.recipe_picture,
-
-                quantities = this.quantities.ToList(),
-                recipe_steps = this.recipe_steps.ToList(),
-                tags = this.selectedTagIds
-                    .Select( tagId => new Tag { tag_id = tagId } )
-                    .ToList()
-            };
-
-            return recipe;
         }
         public int id { get; set; }
         [Display( Name = "Recept neve" )]
@@ -56,12 +39,11 @@ namespace RecipeBook.ViewModels
 
         public byte[]? recipe_picture { get; set; }
         [Display( Name = "Hozzávalók" )]
-        public List<Quantity> quantities { get; set; } = [];
+        public List<QuantityViewModel> quantities { get; set; } = [];
         [Display( Name = "Lépések" )]
         public List<Recipe_step> recipe_steps { get; set; } = [];
-        [Display( Name = "Tagek" )]
         public List<int> selectedTagIds { get; set; } = [];
         [Display( Name = "Tagek" )]
-        public List<Tag> tags { get; set; } = [];
+        public List<string> selectedTagNames { get; set; } = [];
     }
 }
