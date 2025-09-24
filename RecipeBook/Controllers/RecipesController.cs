@@ -235,7 +235,7 @@ namespace RecipeBook.Controllers
             var recipe = await RecipeMapper.ToEntityAsync( newRecipeViewModel, _context );
             _context.Recipes.Add( recipe );
             _context.SaveChanges();
-            return RedirectToAction( nameof( Index ) );
+            return RedirectToAction( nameof( Edit ), new { id = recipe.recipe_id } );
         }
     }
 

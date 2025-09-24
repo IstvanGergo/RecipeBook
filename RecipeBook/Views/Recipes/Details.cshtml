@@ -34,7 +34,10 @@
             <dt class="col-sm-2">@step.step_number</dt>
             <dd class="col-sm-10">@step.step_description</dd>
         }
-
+        @foreach ( var quantity in Model.quantities )
+        {
+            <dd class="col-sm-10">@string.Join( " ", [@quantity.ingredient_name, @quantity.quantity, @quantity.measurement_name] )</dd>
+        }
     </dl>
 </div>
 <div>
