@@ -77,7 +77,7 @@ namespace RecipeBook.ViewModels
                 selectedTagNames = dto.tags, 
 
                 recipe_steps = dto.steps
-                    .Select( s => new Recipe_step { step_number = s.number, step_description = s.description } )
+                    .Select( s => new RecipeStepViewModel { step_number = s.number, step_description = s.description } )
                     .ToList(),
 
                 quantities = dto.quantities

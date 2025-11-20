@@ -16,12 +16,12 @@ namespace RecipeBook.ViewModels
             recipe_picture = recipe.recipe_picture;
             foreach(Quantity q in recipe.quantities )
             {
-                QuantityViewModel quantityViewModel = new QuantityViewModel(q);
+                QuantityViewModel quantityViewModel = new QuantityViewModel( q );
                 quantities.Add( quantityViewModel );
             }
             foreach( Recipe_step step in recipe.recipe_steps )
             {
-                recipe_steps.Add( step );
+                recipe_steps.Add( new RecipeStepViewModel( step ) );
             }
             foreach( Tag tag in recipe.tags )
             {
@@ -41,7 +41,7 @@ namespace RecipeBook.ViewModels
         [Display( Name = "Hozzávalók" )]
         public List<QuantityViewModel> quantities { get; set; } = [];
         [Display( Name = "Lépések" )]
-        public List<Recipe_step> recipe_steps { get; set; } = [];
+        public List<RecipeStepViewModel> recipe_steps { get; set; } = [];
         public List<int> selectedTagIds { get; set; } = [];
         [Display( Name = "Tagek" )]
         public List<string> selectedTagNames { get; set; } = [];

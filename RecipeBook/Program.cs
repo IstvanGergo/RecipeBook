@@ -11,6 +11,16 @@ builder.Services.AddSingleton<ChatClient>( serviceProvider =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors( options =>
+{
+    options.AddPolicy( "AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins( "http://localhost:3000" )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        } );
+} );
 
 ConfigurationManager configuration = builder.Configuration;
 builder.Services.AddDbContext<RecipeDbContext>( options => options.UseNpgsql(
@@ -30,8 +40,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors( "AllowReactApp" );
 app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}" );
