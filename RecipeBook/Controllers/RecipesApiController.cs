@@ -40,12 +40,14 @@ namespace RecipeBook.Controllers
 
             return Ok( recipeViewModels );
         }
+        [Route("/ingredients")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<IngredientViewModel>>> getIngredients()
         {
             var ingredients = await _context.Ingredients.ToListAsync();
             return Ok( ingredients );
         }
+        [Route("/{name}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetFilteredRecipes( [FromQuery] string? name, [FromQuery] List<string>? tags, List<string>? ingredients)
         {
