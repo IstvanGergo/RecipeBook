@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import RecipeCard from "../Components/RecipeCard";
 import FilterBar from "../Components/FilterBar";
-const API_URL = "https://localhost:7270/api/recipesapi";
+const API_URL = "https://localhost:7270/recipesapi";
 export default function ViewRecipes() {
     const [recipes, setRecipes] = useState([]);
     const [filtered, setFiltered] = useState([]);
@@ -23,7 +23,7 @@ export default function ViewRecipes() {
         }, []);
 
     return (
-        <>
+        <div className="page-wrapper">
             <div className="container">
                 <h1>Recipes</h1>
                 <FilterBar
@@ -39,6 +39,6 @@ export default function ViewRecipes() {
                         ))}
                 </div>
             )}
-        </>
+        </div>
     );
 }

@@ -5,14 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using OpenAI.Chat;
 using RecipeBook.Data;
 using RecipeBook.ViewModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static RecipeBook.Controllers.ChatCompletions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RecipeBook.Controllers
 {
-    [Route( "api/[controller]" )]
+    [Route( "[controller]" )]
     [ApiController]
     public class RecipesApiController : ControllerBase
     {
@@ -40,16 +39,25 @@ namespace RecipeBook.Controllers
 
             return Ok( recipeViewModels );
         }
-        [Route("/ingredients")]
         [HttpGet]
+        [Route( "ingredients" )]
         public async Task<ActionResult<IEnumerable<IngredientViewModel>>> getIngredients()
         {
             var ingredients = await _context.Ingredients.ToListAsync();
             return Ok( ingredients );
         }
-        [Route("/{name}")]
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetFilteredRecipes( [FromQuery] string? name, [FromQuery] List<string>? tags, List<string>? ingredients)
+        [Route( "names" )]
+        public async Task<ActionResult<IEnumerable<string>>> getRecipeNames()
+        {
+            var recipeNames = await _context.Recipes.ToListAsync();
+            return Ok( recipeNames );
+        }
+
+        [Route( "/{name}/{tags}/{ingredients}" )]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetFilteredRecipes( [FromRoute] string? name, [FromRoute] List<string>? tags, [FromRoute] List<string>? ingredients )
         {
             var recipeQuery = _context.Recipes
                 .Include(r => r.tags)
