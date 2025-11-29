@@ -1,16 +1,14 @@
 ﻿import * as React from 'react';
+import EditDeleteActions from './EditDeleteActions';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -36,7 +34,17 @@ const ExpandMore = styled((props) => {
     ],
 }));
 
-export default function RecipeReviewCard({ recipe }) {
+function compareDescription(a, b) {
+    if (a.step_number < b.step_number) {
+        return -1;
+    }
+    if (a.step_number > b.step_number) {
+        return 1;
+    }
+    return 0;
+}
+
+export default function RecipeReviewCard({ recipe,onEdit, onDelete  }) {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
@@ -47,9 +55,10 @@ export default function RecipeReviewCard({ recipe }) {
         <Card sx={{ maxWidth: 800 }}>
             <CardHeader
                 action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
+                    <EditDeleteActions
+                        onEdit={() => onEdit(recipe.id)}
+                        onDelete={() => onDelete(recipe.id)}
+                    />
                 }
                 title={recipe.name}
                 align="center"
@@ -76,7 +85,7 @@ export default function RecipeReviewCard({ recipe }) {
                         <Typography sx={{ marginBottom: 2, marginLeft: 3 }}>{i.ingredient_name} {i.quantity} {i.measurement_name}</Typography>
                     )) }
                     <Typography align="center" variant="h4" sx={{ marginBottom: 2 }}>Elkészítés</Typography>
-                    {recipe.recipe_steps.map(s => (
+                    {recipe.recipe_steps.sort(compareDescription).map(s => (
                         <Typography sx={{ marginBottom: 2, marginLeft: 3 }}>{s.step_description}</Typography>
                     )) }
                 </CardContent>

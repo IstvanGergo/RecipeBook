@@ -39,16 +39,16 @@ namespace RecipeBook.Controllers
 
             return Ok( recipeViewModels );
         }
-        [HttpGet]
         [Route( "ingredients" )]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<IngredientViewModel>>> getIngredients()
         {
             var ingredients = await _context.Ingredients.ToListAsync();
             return Ok( ingredients );
         }
 
-        [HttpGet]
         [Route( "names" )]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> getRecipeNames()
         {
             var recipeNames = await _context.Recipes.ToListAsync();
@@ -89,7 +89,7 @@ namespace RecipeBook.Controllers
 
             return Ok( recipeViewModels );
         }
-
+        [Route("create")]
         [HttpPost]
         public async Task<ActionResult<IEnumerable<RecipeViewModel>>> CreateRecipe( [FromForm] IFormFile image)
         {
@@ -129,6 +129,20 @@ namespace RecipeBook.Controllers
             var addedRecipe = new RecipeViewModel(fullRecipe);
 
             return Ok( addedRecipe );
+        }
+        [Route("{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> deleteRecipe(int id )
+        {
+            var recipe = await _context.Recipes.FindAsync(id);
+            if ( recipe == null )
+            {
+                return NotFound();
+            }
+            _context.Recipes.Remove( recipe );
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

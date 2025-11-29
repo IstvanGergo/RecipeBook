@@ -22,7 +22,7 @@ namespace RecipeBook.ViewModels
     public class QuantityDto
     {
         public string ingredient { get; set; }
-        public int quantity { get; set; }
+        public double quantity { get; set; }
         public string measurement { get; set; }
     }
 }

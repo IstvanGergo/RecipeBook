@@ -6,7 +6,7 @@ namespace RecipeBook.ViewModels
     {
         public string ingredient_name { get; set; }
         public string measurement_name { get; set; }
-        public int quantity { get; set; }
+        public double quantity { get; set; }
         public QuantityViewModel() { }
         public QuantityViewModel( Quantity _quantity )
         {

@@ -3,10 +3,10 @@
 export default function Home() {
     return (
         <div className="container">
-            <h1>Welcome to the Recipe App</h1>
-            <Link to="/recipes">View Recipes</Link>
+            <h1>Receptkezelő</h1>
+            <Link to="/recipes">Receptek</Link>
             <br />
-            <Link to="/add">Add Recipe</Link>
+            <Link to="/add">Recept hozzáadása</Link>
         </div>
     );
 }

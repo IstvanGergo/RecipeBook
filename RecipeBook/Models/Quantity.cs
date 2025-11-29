@@ -13,7 +13,7 @@ public partial class Quantity
 
     public int measurement_id { get; set; }
 
-    public int ingredient_quantity { get; set; }
+    public double ingredient_quantity { get; set; }
 
     public virtual Ingredient ingredient { get; set; } = null!;
 
