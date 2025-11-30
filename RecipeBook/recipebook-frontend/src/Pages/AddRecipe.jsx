@@ -1,7 +1,16 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { createRecipe } from "../Api/Api";
 import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
+import {
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Checkbox,
+    ListItemText,
+    TextField,
+    Button
+} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const VisuallyHiddenInput = styled('input')({
@@ -16,8 +25,28 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
+const API_URL = "https://localhost:7270/recipesapi/";
+const INGREDIENTS_API_URL = API_URL + "ingredients";
+
 export default function AddRecipe() {
     const [recipe, setRecipe] = useState({ name: "", ingredients: "", steps: "" });
+    const [ingredients, setIngredients] = useState([]);
+
+    const [ingredientsSelected, setIngredientsSelected] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const fetchIngredients = await fetch(INGREDIENTS_API_URL);
+                const responseIngredients = await fetchIngredients.json();
+                setIngredients(responseIngredients);
+            }
+            catch {
+
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,28 +55,63 @@ export default function AddRecipe() {
 
     return (
         <div className="container">
-            <h1>Add Recipe</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Recipe Name"
-                    value={recipe.name}
-                    onChange={(e) => setRecipe({ ...recipe, name: e.target.value })}
+            <h2>Recept hozzáadása manuálisan</h2>
+            <TextField
+                sx={{ marginBottom: 2 }}
+                label="Recept"
+                variant="outlined"
+                fullWidth
+            />
+            <FormControl fullWidth
+                sx={{ marginBottom: 2 }}>
+                <InputLabel id="ingredients-select-label">Hozzávalók</InputLabel>
+                <Select
+                    labelId="ingredients-label"
+                    multiple
+                    value={ingredientsSelected}
+                    onChange={(e) => setIngredientsSelected(e.target.value)}
+                    renderValue={(selected) => selected.join(', ')}
+                >
+                    {ingredients.map((i) => (
+                        <MenuItem key={i.ingredient_name} value={i.ingredient_name}>
+                            <Checkbox checked={ingredientsSelected.includes(i.ingredient_name)} />
+                            <ListItemText primary={i.ingredient_name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl fullWidth
+                sx={{ marginBottom: 2 }}>
+                <InputLabel id="tags-select-label">Hozzávalók</InputLabel>
+                <Select
+                    labelId="ingredients-label"
+                    multiple
+                    value={ingredientsSelected}
+                    onChange={(e) => setIngredientsSelected(e.target.value)}
+                    renderValue={(selected) => selected.join(', ')}
+                >
+                    {ingredients.map((i) => (
+                        <MenuItem key={i.ingredient_name} value={i.ingredient_name}>
+                            <Checkbox checked={ingredientsSelected.includes(i.ingredient_name)} />
+                            <ListItemText primary={i.ingredient_name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}>
+                Recept feltöltése
+                <VisuallyHiddenInput
+                    type="file"
+                    onChange={(event) => console.log(event.target.files)}
+                    multiple
                 />
-                <textarea
-                    placeholder="Ingredients"
-                    value={recipe.ingredients}
-                    onChange={(e) =>
-                        setRecipe({ ...recipe, ingredients: e.target.value })
-                    }
-                />
-                <textarea
-                    placeholder="Preparation Steps"
-                    value={recipe.steps}
-                    onChange={(e) => setRecipe({ ...recipe, steps: e.target.value })}
-                />
-                <button type="submit">Add</button>
-            </form>
+            </Button>
+            <h2>Recept hozzáadása kép alapján</h2>
             <Button
                 component="label"
                 role={undefined}
@@ -55,7 +119,7 @@ export default function AddRecipe() {
                 tabIndex={-1}
                 startIcon={<CloudUploadIcon />}
             >
-                Upload files
+                Kép feltöltése
                 <VisuallyHiddenInput
                     type="file"
                     onChange={(event) => console.log(event.target.files)}

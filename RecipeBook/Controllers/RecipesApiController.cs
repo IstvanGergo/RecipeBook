@@ -23,22 +23,7 @@ namespace RecipeBook.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetRecipes()
-        {
-            var recipes = await _context.Recipes
-                .Include(r => r.tags)
-                .Include(r => r.quantities)
-                    .ThenInclude(q => q.ingredient)
-                .Include(r => r.quantities)
-                    .ThenInclude(q => q.measurement)
-                .Include(r => r.recipe_steps)
-                .ToListAsync();
 
-            var recipeViewModels = recipes.Select(r => new RecipeViewModel(r)).ToList();
-
-            return Ok( recipeViewModels );
-        }
         [Route( "ingredients" )]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<IngredientViewModel>>> getIngredients()
@@ -47,17 +32,15 @@ namespace RecipeBook.Controllers
             return Ok( ingredients );
         }
 
-        [Route( "names" )]
+        [Route( "tags" )]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> getRecipeNames()
+        public async Task<ActionResult<IEnumerable<string>>> getTags()
         {
-            var recipeNames = await _context.Recipes.ToListAsync();
-            return Ok( recipeNames );
+            var tags = await _context.Tags.ToListAsync();
+            return Ok( tags );
         }
-
-        [Route( "/{name}/{tags}/{ingredients}" )]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetFilteredRecipes( [FromRoute] string? name, [FromRoute] List<string>? tags, [FromRoute] List<string>? ingredients )
+        public async Task<ActionResult<IEnumerable<RecipeViewModel>>> GetFilteredRecipes( [FromQuery] string? name, [FromQuery] List<string>? tags, [FromQuery] List<string>? ingredients )
         {
             var recipeQuery = _context.Recipes
                 .Include(r => r.tags)
@@ -73,13 +56,13 @@ namespace RecipeBook.Controllers
             }
             if ( tags != null && tags.Count != 0 )
             {
-                recipeQuery = recipeQuery.Where(r=> r.tags.Any(t => tags.Contains(t.tag_id.ToString())
+                recipeQuery = recipeQuery.Where(r=> r.tags.All(t => tags.Contains(t.tag_id.ToString())
                 || tags.Contains(t.tag_name.ToLower())));
             }
             if ( ingredients != null && ingredients.Count() != 0 )
             {
                 recipeQuery = recipeQuery.Where( r =>
-                    r.quantities.Any( q =>
+                    r.quantities.All( q =>
                         ingredients.Contains( q.ingredient.ingredient_id.ToString() ) ||
                         ingredients.Contains( q.ingredient.ingredient_name ) ) );
             }
@@ -130,9 +113,10 @@ namespace RecipeBook.Controllers
 
             return Ok( addedRecipe );
         }
+
         [Route("{id}")]
         [HttpDelete]
-        public async Task<IActionResult> deleteRecipe(int id )
+        public async Task<IActionResult> DeleteRecipe(int id )
         {
             var recipe = await _context.Recipes.FindAsync(id);
             if ( recipe == null )

@@ -1,80 +1,91 @@
 ﻿import { useEffect, useState } from "react";
-import { Select } from '@mui/material';
-import { MenuItem } from '@mui/material';
-import { FormControl } from '@mui/material';
-import { InputLabel } from '@mui/material';
+import {
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Checkbox,
+    ListItemText,
+    TextField
+} from '@mui/material';
+
 const API_URL = "https://localhost:7270/recipesapi/";
-const NAMES_API_URL = API_URL + "names";
-const INGREDIENTS_API_URL = API_URL + "ingredients";
-export default function FilterBar({ recipes, setFiltered }) {
-    const [names, setNames] = useState([]);
+
+export default function FilterBar({ onFilter }) {
+    const [name, setName] = useState("");
     const [ingredients, setIngredients] = useState([]);
-    const [search, setSearch] = useState([]);
+    const [tags, setTags] = useState([]);
 
-    const [ingredient, selectIngredient] = useState('');
-    const [recipe, selectRecipe] = useState('');
-    const handleIngredientChange = (event) => {
-        selectIngredient(event.target.value);
+    const [ingredientsSelected, setIngredientsSelected] = useState([]);
+    const [tagsSelected, setTagsSelected] = useState([]);
+
+    const fetchFilterData = async () => {
+        const i = await fetch(`${API_URL}ingredients`);
+        const fetchedIngredients = await i.json();
+        const t = await fetch(`${API_URL}tags`);
+        const fetchedTags = await t.json();
+
+        setIngredients(fetchedIngredients);
+        setTags(fetchedTags);
     };
-    const handleRecipeChange = (event) => {
-        selectRecipe(event.target.value);
-    }
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fetchNames = await fetch(NAMES_API_URL);
-                const responseNames = await fetchNames.json();
-                setNames(responseNames);
-                const fetchIngredients = await fetch(INGREDIENTS_API_URL);
-                const responseIngredients = await fetchIngredients.json();
-                setIngredients(responseIngredients);
-            }
-            catch {
-
-            }
-        };
-        fetchData();
+        fetchFilterData();
     }, []);
-
-    const handleFilter = () => {
-        setFiltered(
-            recipes.filter((r) =>
-                r.name.toLowerCase().includes(search.toLowerCase())
-            )
-        );
-    };
 
     return (
         <div className="filter-bar">
-            <FormControl fullWidth>
-                <InputLabel id="recipes-select-label">Receptek</InputLabel>
-                <Select
-                    type="text"
-                    label="Receptek"
-                    value={recipe}
-                    onChange={handleRecipeChange}
-                >
-                    {
-                        names.map(n => (
-                            <MenuItem>{n.recipe_name}</MenuItem>))
-                    }
-                </Select>
-            </FormControl>
-            <FormControl fullWidth>
+            <TextField
+                sx={{ marginBottom: 2 }}
+                label="Recept"
+                variant="outlined"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
+            <FormControl fullWidth
+                sx={{ marginBottom: 2 }}>
                 <InputLabel id="ingredients-select-label">Hozzávalók</InputLabel>
                 <Select
-                    type="text"
-                    label="Hozzávalók"
-                    value={ingredient}
-                    onChange={handleIngredientChange}
+                    labelId="ingredients-label"
+                    multiple
+                    value={ingredientsSelected}
+                    onChange={(e) => setIngredientsSelected(e.target.value)}
+                    renderValue={(selected) => selected.join(', ')}
                 >
-                    {
-                        ingredients.map(i => (
-                            <MenuItem>{i.ingredient_name}</MenuItem>))
-                    }
+                    {ingredients.map((i) => (
+                        <MenuItem key={i.ingredient_name} value={i.ingredient_name}>
+                            <Checkbox checked={ingredientsSelected.includes(i.ingredient_name)} />
+                            <ListItemText primary={i.ingredient_name} />
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
-            <button onClick={handleFilter}>Keresés</button>
+            <FormControl fullWidth
+                sx={{ marginBottom: 2 }}>
+                <InputLabel id="tags-select-label">Tagek</InputLabel>
+                <Select
+                    labelId="tags-label"
+                    multiple
+                    value={tagsSelected}
+                    onChange={(e) => setTagsSelected(e.target.value)}
+                    renderValue={(selected) => selected.join(', ')}
+                >
+                    {tags.map((t) => (
+                        <MenuItem key={t.tag_name} value={t.tag_name}>
+                            <Checkbox checked={tagsSelected.includes(t.tag_name)} />
+                            <ListItemText primary={t.tag_name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <Button
+                variant="contained"
+                onClick={() => onFilter(name, ingredientsSelected, tagsSelected)}
+            >
+                Apply filters
+            </Button>
         </div>
     );
 }
