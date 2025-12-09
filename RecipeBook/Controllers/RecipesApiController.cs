@@ -64,11 +64,6 @@ namespace RecipeBook.Controllers
         {
             var recipeQuery = _context.Recipes
                 .Include(r => r.tags)
-                .Include(r => r.quantities)
-                    .ThenInclude(q => q.ingredient)
-                .Include(r => r.quantities)
-                    .ThenInclude(q => q.measurement)
-                .Include(r => r.recipe_steps)
                 .AsQueryable();
             if ( !string.IsNullOrEmpty( name ) )
             {
@@ -150,6 +145,7 @@ namespace RecipeBook.Controllers
 
             return NoContent();
         }
+        
         [Route( "{id}" )]
         [HttpPut]
         public async Task<IActionResult> UpdateRecipe( int id, [FromBody] RecipeDisplayModel updatedRecipe )

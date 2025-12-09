@@ -35,8 +35,9 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
       const i = await fetch(`${API_URL}ingredient`)
       const fetchedIngredients: Ingredient[] = await i.json()
       const t = await fetch(`${API_URL}tag`)
-      const fetchedTags: Tag[] = await t.json()
-
+      const fetchedTags: Tag[] = await t.json();
+      fetchedTags.sort((a, b) => a.tag_name.localeCompare(b.tag_name));
+      fetchedIngredients.sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name));
       setIngredients(fetchedIngredients)
       setTags(fetchedTags)
     } catch (error) {
