@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Newtonsoft.Json.Schema;
-using OpenAI;
-using OpenAI.Chat;
+﻿using OpenAI.Chat;
 namespace RecipeBook.Controllers
 {
     public static class ChatCompletions

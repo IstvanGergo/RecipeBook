@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using OpenAI;
 using OpenAI.Chat;
 using RecipeBook.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ChatClient>( serviceProvider =>
     {
-        var key = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        return new ChatClient( "gpt-4o", key ); });
+        String? apiKey = builder.Configuration["OpenAIApiKey"];
+        return new ChatClient( "gpt-5-nano", apiKey ); 
+    });
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddCors( options =>
 {

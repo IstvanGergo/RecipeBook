@@ -7,7 +7,7 @@ namespace RecipeBook.ViewModels
 {
     public class RecipeMapper
     {
-        public static async Task<Recipe> ToEntityAsync(RecipeViewModel _model, RecipeDbContext _dbContext )
+        public static async Task<Recipe> ToEntityAsync(RecipeDisplayModel _model, RecipeDbContext _dbContext )
         {
             var recipe = new Recipe
             {
@@ -24,15 +24,13 @@ namespace RecipeBook.ViewModels
                     step_number = step.step_number
                 } );
             }
-            for ( int i = 0; i < _model.selectedTagIds.Count(); ++i )
+            for ( int i = 0; i < _model.selectedTagIds.Count; ++i )
             {
                 var tagId = _model.selectedTagIds[i];
-                var tagName = _model.selectedTagNames.ElementAtOrDefault(i);
                 var tag = await _dbContext.Tags.FindAsync(tagId);
                 recipe.tags.Add( tag );
-
             }
-            foreach ( var qDto in _model.quantities ?? Enumerable.Empty<QuantityViewModel>() )
+            foreach ( var qDto in _model.quantities ?? Enumerable.Empty<QuantityDisplayModel>() )
             {
                 var ingredient = await _dbContext.Ingredients
                 .FirstOrDefaultAsync(i => i.ingredient_name == qDto.ingredient_name);
@@ -66,9 +64,9 @@ namespace RecipeBook.ViewModels
             _dbContext.SaveChanges();
             return recipe;
         }
-        public static async Task<RecipeViewModel> FromImportDto( RecipeDto dto, RecipeDbContext _dbContext )
+        public static async Task<Recipe> FromImportDto( RecipeDto dto, RecipeDbContext _dbContext )
         {
-            var recipe = new RecipeViewModel()
+            var recipeDisplayModel = new RecipeDisplayModel()
             {
                 name = dto.name,
                 prep_time = ( short )dto.time,
@@ -76,23 +74,20 @@ namespace RecipeBook.ViewModels
 
                 selectedTagNames = dto.tags, 
 
-                recipe_steps = dto.steps
-                    .Select( s => new RecipeStepViewModel { step_number = s.number, step_description = s.description } )
-                    .ToList(),
+                recipe_steps = [.. dto.steps.Select( s => new RecipeStepDisplayModel { step_number = s.number, step_description = s.description } )],
 
-                quantities = dto.quantities
-                    .Select( q => new QuantityViewModel
+                quantities = [.. dto.quantities
+                    .Select( q => new QuantityDisplayModel
                     {
                         ingredient_name = q.ingredient,
                         measurement_name = q.measurement,
                         quantity = q.quantity
-                    } )
-                    .ToList()
+                    } )]
             };
 
             // Handle tags not in DB
-            var existingTags = await _dbContext.Tags.Where( t=> dto.tags.Contains(t.tag_name) ).ToListAsync();
-            var existingTagNames = existingTags.Select( t=>t.tag_name ).ToList();
+            var existingTags = await _dbContext.Tags.Where( t => dto.tags.Contains(t.tag_name) ).ToListAsync();
+            var existingTagNames = existingTags.Select( t => t.tag_name ).ToList();
             var newTagNames = dto.tags.Except(existingTagNames).ToList();
             var newTags = newTagNames.Select(name => new Tag{ tag_name = name }).ToList();
 
@@ -102,8 +97,9 @@ namespace RecipeBook.ViewModels
             await _dbContext.SaveChangesAsync();
             foreach( var t in allTags )
             {
-                recipe.selectedTagIds.Add(t.tag_id);
+                recipeDisplayModel.selectedTagIds.Add(t.tag_id);
             }
+            var recipe = await RecipeMapper.ToEntityAsync(recipeDisplayModel, _dbContext);
             return recipe;
         }
     }

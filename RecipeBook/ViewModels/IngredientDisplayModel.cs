@@ -1,6 +1,6 @@
 ﻿namespace RecipeBook.ViewModels
 {
-    public class IngredientViewModel
+    public class IngredientDisplayModel
     {
         public int ingredient_id;
         public string ingredient_name;

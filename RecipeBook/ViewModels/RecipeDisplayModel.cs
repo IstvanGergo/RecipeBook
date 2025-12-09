@@ -4,10 +4,10 @@ using RecipeBook.Models;
 
 namespace RecipeBook.ViewModels
 {
-    public class RecipeViewModel
+    public class RecipeDisplayModel
     {
-        public RecipeViewModel() { }
-        public RecipeViewModel( Recipe recipe )
+        public RecipeDisplayModel() { }
+        public RecipeDisplayModel( Recipe recipe )
         {
             id = recipe.recipe_id;
             name = recipe.recipe_name;
@@ -16,12 +16,12 @@ namespace RecipeBook.ViewModels
             recipe_picture = recipe.recipe_picture;
             foreach(Quantity q in recipe.quantities )
             {
-                QuantityViewModel quantityViewModel = new QuantityViewModel( q );
+                QuantityDisplayModel quantityViewModel = new QuantityDisplayModel( q );
                 quantities.Add( quantityViewModel );
             }
             foreach( Recipe_step step in recipe.recipe_steps )
             {
-                recipe_steps.Add( new RecipeStepViewModel( step ) );
+                recipe_steps.Add( new RecipeStepDisplayModel( step ) );
             }
             foreach( Tag tag in recipe.tags )
             {
@@ -39,9 +39,9 @@ namespace RecipeBook.ViewModels
 
         public byte[]? recipe_picture { get; set; }
         [Display( Name = "Hozzávalók" )]
-        public List<QuantityViewModel> quantities { get; set; } = [];
+        public List<QuantityDisplayModel> quantities { get; set; } = [];
         [Display( Name = "Lépések" )]
-        public List<RecipeStepViewModel> recipe_steps { get; set; } = [];
+        public List<RecipeStepDisplayModel> recipe_steps { get; set; } = [];
         public List<int> selectedTagIds { get; set; } = [];
         [Display( Name = "Tagek" )]
         public List<string> selectedTagNames { get; set; } = [];
