@@ -1,6 +1,5 @@
-"use client"
-
 import React, { useState, ChangeEvent } from "react"
+import { useNavigate } from "react-router-dom"
 import { createRecipe } from "../api/api"
 import { styled } from "@mui/material/styles"
 import {
@@ -24,6 +23,7 @@ const VisuallyHiddenInput = styled("input")({
 })
 
 export default function AddRecipe() {
+    const navigate = useNavigate()
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [uploading, setUploading] = useState(false)
     const [message, setMessage] = useState("")
@@ -48,9 +48,9 @@ export default function AddRecipe() {
             formData.append("image", selectedFile)
 
             const response = await createRecipe(formData)
-
             if (response.ok) {
-                setMessage("Recept sikeresen feltöltve!")
+                const data = await response.json();
+                navigate(`/recipes/${data.id}/edit`)
             } else {
                 setMessage("Hiba történt a feltöltés során.")
             }

@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { Link } from "react-router-dom"
@@ -54,7 +52,7 @@ export default function RecipeCard({ recipe, onDelete }: RecipeCardProps) {
           height="180"
           image={
             recipe.recipe_picture ||
-            `/placeholder.svg?height=180&width=400&query=${encodeURIComponent(recipe.name + " hungarian food dish")}`
+            `/placeholder.svg?height=180&width=400&query=${encodeURIComponent(recipe.name)}`
           }
           alt={recipe.name}
           sx={{ objectFit: "cover" }}

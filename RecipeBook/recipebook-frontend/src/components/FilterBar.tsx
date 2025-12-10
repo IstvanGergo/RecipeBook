@@ -1,6 +1,4 @@
-"use client"
-
-import { useEffect, useState, type ChangeEvent } from "react"
+import { useEffect, useState } from "react"
 import {
   Button,
   Select,
@@ -9,13 +7,11 @@ import {
   InputLabel,
   Checkbox,
   ListItemText,
-  TextField,
   type SelectChangeEvent,
   Box,
 } from "@mui/material"
+import { getIngredients, getTags } from "../api/api"
 import type { Ingredient, Tag } from "../types/recipe"
-
-const API_URL = "https://localhost:7270/api/recipe/"
 
 interface FilterBarProps {
   onFilter: (name: string, ingredients: string[], tags: string[]) => void
@@ -23,7 +19,6 @@ interface FilterBarProps {
 
 export default function FilterBar({ onFilter }: FilterBarProps) {
   const [name, setName] = useState("")
-  const [searchTerm, setSearchTerm] = useState("")
   const [ingredients, setIngredients] = useState<Ingredient[]>([])
   const [tags, setTags] = useState<Tag[]>([])
 
@@ -32,10 +27,10 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
 
   const fetchFilterData = async () => {
     try {
-      const i = await fetch(`${API_URL}ingredient`)
-      const fetchedIngredients: Ingredient[] = await i.json()
-      const t = await fetch(`${API_URL}tag`)
-      const fetchedTags: Tag[] = await t.json();
+      const i = getIngredients();
+      const fetchedIngredients: Ingredient[] = await i;
+      const t = getTags();
+      const fetchedTags: Tag[] = await t;
       fetchedTags.sort((a, b) => a.tag_name.localeCompare(b.tag_name));
       fetchedIngredients.sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name));
       setIngredients(fetchedIngredients)
@@ -101,7 +96,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
         </Select>
       </FormControl>
       <Button variant="contained" onClick={() => onFilter(name, ingredientsSelected, tagsSelected)}>
-        Apply filters
+        Szűrés
       </Button>
     </Box>
   )

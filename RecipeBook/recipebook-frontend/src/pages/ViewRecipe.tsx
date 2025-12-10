@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { getRecipes } from "../api/api"
 import FilterBar from "../components/FilterBar"
@@ -19,9 +17,7 @@ export default function ViewRecipes() {
 
   const filteredRecipes = recipes.filter(
     (r) =>
-      r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.selectedTagNames.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
+      r.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const fetchData = async () => {
@@ -34,22 +30,22 @@ export default function ViewRecipes() {
   const handleDelete = (id: number) => {
     setRecipes((prev) => prev.filter((r) => r.id !== id))
   }
-    const handleFilter = async (name: string, selectedIngredients: string[], selectedTags: string[]) => {
-        const params = new URLSearchParams();
+  const handleFilter = async (name: string, selectedIngredients: string[], selectedTags: string[]) => {
+    const params = new URLSearchParams();
 
-        if (name) {
-            params.append("name", name);
-        }
-        selectedIngredients.forEach(i =>
-            params.append("ingredients", i))
-        selectedTags.forEach(i =>
-            params.append("tags", i))
+    if (name) {
+        params.append("name", name);
+    }
+    selectedIngredients.forEach(i =>
+        params.append("ingredients", i))
+    selectedTags.forEach(i =>
+        params.append("tags", i))
 
-        setLoading(true);
-        const res = await getRecipes(params);
+    setLoading(true);
+    const res = await getRecipes(params);
 
-        setRecipes(res as Recipe[])
-        setLoading(false);
+    setRecipes(res as Recipe[])
+    setLoading(false);
     }
   useEffect(() => {
     fetchData()

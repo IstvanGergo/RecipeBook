@@ -48,7 +48,7 @@ namespace RecipeBook.Controllers
                         "additionalProperties": false
                     }
                     """u8.ToArray()),
-                "Egy AI asszisztens vagy, aki receptek képeit konvertálja JSON formátumba. Eközben írj át minden betűt kisbetűre.",
+                "Egy AI asszisztens vagy, aki receptek képeit konvertálja JSON formátumba. Eközben írj át minden betűt kisbetűre. Amennyiben a kép nem tartalmaz receptet, üres JSON-el válaszolj.",
                 true)
         };
     }

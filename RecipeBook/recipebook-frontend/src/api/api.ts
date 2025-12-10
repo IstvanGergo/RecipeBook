@@ -1,4 +1,4 @@
-import type { Recipe } from "../types/recipe"
+import type { Tag, Ingredient, Recipe } from "../types/recipe"
 
 const API_URL = "https://localhost:7270/api/recipe"
 
@@ -9,6 +9,16 @@ export async function getRecipes(params?: URLSearchParams): Promise<Recipe[]> {
   }
   const res = await fetch(API_URL)
   return res.json()
+}
+
+export async function getIngredients(): Promise<Ingredient[]> {
+    const res = await fetch(`${API_URL}/ingredient`)
+    return res.json();
+}
+
+export async function getTags(): Promise<Tag[]> {
+    const res = await fetch(`${API_URL}/tag`)
+    return res.json();
 }
 
 export async function getRecipeById(id: number | string): Promise<Recipe> {

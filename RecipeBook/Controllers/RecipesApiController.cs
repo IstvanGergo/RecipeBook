@@ -109,6 +109,10 @@ namespace RecipeBook.Controllers
             var response = await _chatClient.CompleteChatAsync(messages, recipeReturn);
             var result = response.Value.Content[0].Text;
             var extracted = JsonSerializer.Deserialize<RecipeDto>( result );
+            if(extracted.name == string.Empty )
+            {
+                return BadRequest( "Invalid image" );
+            }
             var newRecipe = await RecipeMapper.FromImportDto( extracted, _context );
             _context.Recipes.Add( newRecipe );
             await _context.SaveChangesAsync();

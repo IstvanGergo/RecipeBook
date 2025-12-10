@@ -1,5 +1,3 @@
-"use client"
-
 import { useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { getRecipeById } from "../api/api"
@@ -86,22 +84,6 @@ export default function RecipeDetails() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "grey.100", pb: 4 }}>
-      {/*<Box
-        sx={{
-          bgcolor: "#e65100",
-          color: "white",
-          py: 3,
-          mb: 4,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h4" component="h1" fontWeight={700} textAlign="center">
-            Receptkönyv
-          </Typography>
-        </Container>
-      </Box> */}
-
       <Container maxWidth="md"  sx={{mt: 4}}>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")} sx={{ mb: 3, color: "#e65100" }}>
           Vissza a receptekhez

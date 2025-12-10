@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { editRecipe, getRecipeById } from "../api/api"
@@ -104,7 +102,8 @@ export default function RecipeEdit() {
             <Button variant="contained" onClick={() => navigate("/")} sx={{ bgcolor: "#e65100" }}>
               Vissza a receptekhez
             </Button>
-          </Box>
+                </Box>
+
         </Container>
       </Box>
     )
@@ -124,7 +123,6 @@ export default function RecipeEdit() {
           </Box>
         </Container>
       </Box>
-
       <Container maxWidth="md">
         <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
           <Typography variant="h4" fontWeight={700} sx={{ textTransform: "capitalize", mb: 1 }}>

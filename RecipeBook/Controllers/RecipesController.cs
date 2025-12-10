@@ -25,11 +25,6 @@ namespace RecipeBook.Controllers
             List<RecipeDisplayModel> recipeViewModels = [];
             var recipeList =  _context.Recipes
                 .Include(r => r.tags)
-                .Include( r => r.quantities)
-                    .ThenInclude( q => q.ingredient )
-                .Include( r=> r.quantities )
-                    .ThenInclude( q=>q.measurement )
-                .Include(r => r.recipe_steps)
                 .ToListAsync();
             await recipeList;
             foreach ( var recipe in recipeList.Result )
@@ -219,9 +214,13 @@ namespace RecipeBook.Controllers
             List<ChatMessage> messages = [
                 new UserChatMessage(ChatMessageContentPart.CreateImagePart(binaryData, image.ContentType.ToString(), ChatImageDetailLevel.Auto))
                 ];
-            var response = await _chatClient.CompleteChatAsync(messages, recipeReturn);
+            var response = await _chatClient.CompleteChatAsync( messages, recipeReturn );
             var result = response.Value.Content[0].Text;
             var extracted = JsonSerializer.Deserialize<RecipeDto>( result );
+            if(extracted.name == string.Empty )
+            {
+                return RedirectToAction( nameof( Index ) );
+            }
             var newRecipe = await RecipeMapper.FromImportDto( extracted, _context );
             _context.Recipes.Add( newRecipe );
             _context.SaveChanges();
