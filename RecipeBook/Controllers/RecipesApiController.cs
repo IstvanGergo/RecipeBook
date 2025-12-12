@@ -117,7 +117,6 @@ namespace RecipeBook.Controllers
             _context.Recipes.Add( newRecipe );
             await _context.SaveChangesAsync();
 
-            // Load the full recipe with navigation properties
             var fullRecipe = await _context.Recipes
             .Include(r => r.tags)
             .Include(r => r.quantities)
